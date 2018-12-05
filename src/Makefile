@@ -1,4 +1,5 @@
-CFLAGS+=-Wall -W -O3 -g -W -Wextra
+CC=gcc
+CFLAGS+=-DTRAINING=1 -I../include -Wall -W -O3 -g -W -Wextra -MMD -MP
 
 AVX2:=$(shell cat /proc/cpuinfo | grep -c avx2)
 NEON:=$(shell cat /proc/cpuinfo | grep -c neon)
@@ -13,20 +14,32 @@ endif
 
 all: dump_data test_lpcnet test_vec
 
-dump_data: denoise.c kiss_fft.c pitch.c celt_lpc.c
-	gcc -DTRAINING=1 $(CFLAGS) -I../include denoise.c kiss_fft.c pitch.c celt_lpc.c -o dump_data -lm
+dump_data_objs := lpcnet.o nnet.o nnet_data.o
+dump_data_deps := $(dump_data_objs:.o=.d)
+dump_data: $(dump_data_objs)
+	gcc -o $@ $(CFLAGS) $(dump_data_objs) -lm
 
-nnet_data.o: nnet_data.c
-	gcc $(CFLAGS) -c nnet_data.c
+-include $dump_data_deps(_deps)
 
-test_lpcnet: lpcnet.c nnet.c nnet_data.c nnet_data.h nnet_data.o
-	gcc -o test_lpcnet $(CFLAGS) lpcnet.c nnet.c nnet_data.o -lm
+test_lpcnet_objs := lpcnet.o nnet.o nnet_data.o
+test_lpcnet_deps := $(test_lpcnet_objs:.o=.d)
+test_lpcnet: $(test_lpcnet_objs)
+	gcc -o $@ $(CFLAGS) $(test_lpcnet_objs) -lm
 
-test_vec: test_vec.c vec.h vec_neon.h vec_avx2.h
-	gcc -o test_vec $(CFLAGS) test_vec.c -lm
+-include $(test_lpcnet_deps)
+
+test_vec_objs := test_vec.o
+test_vec_deps := $(test_vec_objs:.o=.d)
+test_vec: $(test_vec_objs)
+	gcc -o $@ $(CFLAGS) $(test_vec_objs) -lm
+
+-include $(test_vec_deps)
 
 test: test_vec
 	./test_vec
 
 clean:
 	rm -f dump_data test_lpcnet test_vec
+	rm -f $(dump_data_objs) $(dump_data_deps) 
+	rm -f $(test_lpcnet_objs) $(test_lpcnet_deps) 
+	rm -f $(test_vec_objs) $(test_vec_deps) 

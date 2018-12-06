@@ -7,18 +7,29 @@
 
 #define LPCNET_TEST
 
+// we need to call two functions with the same name, so use #defines to
+// temp rename them
+
 #ifdef __ARM_NEON__
-#define celt_exp2_neon celt_exp2_fast
-#define tansig_approx_neon tansig_approx_fast
-#define sigmoid_neon_approx sigmoid_approx_fast
-#define softmax_neon softmax_fast
-#define vec_tanh_neon vec_tanh_fast
-#define vec_sigmoid_neon vec_sigmoid_fast
-#define sgemv_accum16_neon sgemv_accum16_fast
-#define sparse_sgemv_accum16_neon sparse_sgemv_accum16_fast
+#define celt_exp2 celt_exp2_fast
+#define tansig_approx tansig_approx_fast
+#define sigmoid_approx sigmoid_approx_fast
+#define softmax softmax_fast
+#define vec_tanh vec_tanh_fast
+#define vec_sigmoid vec_sigmoid_fast
+#define sgemv_accum16 sgemv_accum16_fast
+#define sparse_sgemv_accum16 sparse_sgemv_accum16_fast
 #include "vec_neon.h"
 #endif
 
+#undef celt_exp2
+#undef tansig_approx
+#undef sigmoid_approx
+#undef softmax
+#undef vec_tanh
+#undef vec_sigmoid
+#undef sgemv_accum16
+#undef sparse_sgemv_accum16
 #include "vec.h"
 
 #define ROW_STEP 16

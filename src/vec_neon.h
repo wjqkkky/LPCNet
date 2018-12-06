@@ -2,7 +2,7 @@
 
 #include <arm_neon.h>
 #ifndef LPCNET_TEST
-static float celt_exp2_neon(float x)
+static float celt_exp2(float x)
 {
    int integer;
    float frac;
@@ -20,9 +20,9 @@ static float celt_exp2_neon(float x)
    res.i = (res.i + (integer<<23)) & 0x7fffffff;
    return res.f;
 }
-#define celt_exp_neon(x) celt_exp2_neon((x)*1.44269504f)
+#define celt_exp_neon(x) celt_exp2((x)*1.44269504f)
 
-static float tansig_approx_neon(float x)
+static float tansig_approx(float x)
 {
     int i;
     float y, dy;
@@ -50,37 +50,37 @@ static float tansig_approx_neon(float x)
     return sign*y;
 }
 
-static OPUS_INLINE float sigmoid_approx_neon(float x)
+static OPUS_INLINE float sigmoid_approx(float x)
 {
-   return .5f + .5f*tansig_approx_neon(.5f*x);
+   return .5f + .5f*tansig_approx(.5f*x);
 }
 
-static void softmax_neon(float *y, const float *x, int N)
+static void softmax(float *y, const float *x, int N)
 {
     int i;
     for (i=0;i<N;i++)
         y[i] = celt_exp_neon(x[i]);
 }
 
-static void vec_tanh_neon(float *y, const float *x, int N)
+static void vec_tanh(float *y, const float *x, int N)
 {
     int i;
     for (i=0;i<N;i++)
     {
-        y[i] = tansig_approx_neon(x[i]);
+        y[i] = tansig_approx(x[i]);
     }
 }
 
-static void vec_sigmoid_neon(float *y, const float *x, int N)
+static void vec_sigmoid(float *y, const float *x, int N)
 {
     int i;
     for (i=0;i<N;i++)
     {
-        y[i] = sigmoid_approx_neon(x[i]);
+        y[i] = sigmoid_approx(x[i]);
     }
 }
 #endif
-static void sgemv_accum16_neon(float *out, const float *weights, int rows, int cols, int col_stride, const float *x)
+static void sgemv_accum16(float *out, const float *weights, int rows, int cols, int col_stride, const float *x)
 {
    int i, j;
    for (i=0;i<rows;i+=16)
@@ -119,7 +119,7 @@ static void sgemv_accum16_neon(float *out, const float *weights, int rows, int c
    }
 }
 
-static void sparse_sgemv_accum16_neon(float *out, const float *w, int rows, const int *idx, const float *x)
+static void sparse_sgemv_accum16(float *out, const float *w, int rows, const int *idx, const float *x)
 {
    int i, j;
    for (i=0;i<rows;i+=16)

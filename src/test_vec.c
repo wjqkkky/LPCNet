@@ -19,10 +19,15 @@
 #define sgemv_accum16 sgemv_accum16_fast
 #define sparse_sgemv_accum16 sparse_sgemv_accum16_fast
 
+#ifdef __AVX__
+#include "vec_avx.h"
 #ifdef __AVX2__
-#include "vec_avx2.h"
 const char simd[]="AVX2";
+#else
+const char simd[]="AVX";
 #endif
+#endif
+
 #ifdef __ARM_NEON__
 #include "vec_neon.h"
 const char simd[]="NEON";

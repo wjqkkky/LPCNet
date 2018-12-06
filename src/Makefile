@@ -4,10 +4,16 @@ CC=gcc
 CFLAGS+=-DTRAINING=1 -I../include -Wall -W -O3 -g -W -Wextra -MMD -MP
 
 AVX2:=$(shell cat /proc/cpuinfo | grep -c avx2)
+AVX:=$(shell cat /proc/cpuinfo | grep -c avx)
 NEON:=$(shell cat /proc/cpuinfo | grep -c neon)
 
 ifneq ($(AVX2),0)
 CFLAGS+=-mavx2 -mfma
+else
+# AVX2 machines will also match on AVX
+ifneq ($(AVX),0)
+CFLAGS+=-mavx
+endif
 endif
 
 ifneq ($(NEON),0)

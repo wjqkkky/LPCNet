@@ -46,6 +46,12 @@
 #include "vec_avx2.h"
 #elif __ARM_NEON__
 #include "vec_neon.h"
+#define celt_exp2celt_exp2_neon
+#define softmax softmax_neon
+#define vec_tanh vec_tanh_neon
+#define vec_sigmoid vec_sigmoid_neon
+#define sgemv_accum16 sgemv_accum16_neon
+#define sparse_sgemv_accum16 sparse_sgemv_accum16_neon
 #else
 #warning Compiling without any vectorization. This code will be very slow
 #include "vec.h"

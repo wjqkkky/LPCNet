@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS+=-DTRAINING=1 -I../include -Wall -W -O3 -g -W -Wextra -MMD -MP
+CFLAGS+=-DTRAINING=1 -I../include -Wall -W -O3 -g -W -Wextra -MMD -MP -pg
 
 AVX2:=$(shell cat /proc/cpuinfo | grep -c avx2)
 NEON:=$(shell cat /proc/cpuinfo | grep -c neon)

@@ -1,5 +1,5 @@
 /* No AVX2/FMA support */
-
+#ifndef LPCNET_TEST
 static float celt_exp2(float x)
 {
    int integer;
@@ -77,7 +77,7 @@ static void vec_sigmoid(float *y, const float *x, int N)
         y[i] = sigmoid_approx(x[i]);
     }
 }
-
+#endif
 static void sgemv_accum16(float *out, const float *weights, int rows, int cols, int col_stride, const float *x)
 {
    int i, j;
@@ -118,13 +118,11 @@ static void sparse_sgemv_accum16(float *out, const float *w, int rows, const int
    {
       int cols;
       cols = *idx++;
-      printf("cols=%d\n", cols);
       for (j=0;j<cols;j++)
       {
          float * restrict y;
          float xj;
          xj = x[*idx++];
-	 printf("xj = %f\n", xj);
          y = &out[i];
          y[0] += w[0]*xj;
          y[1] += w[1]*xj;

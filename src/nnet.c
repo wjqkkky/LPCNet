@@ -43,8 +43,10 @@
 #define SOFTMAX_HACK
 
 #ifdef __AVX2__
+#warning Compiling for SIMD AVX2
 #include "vec_avx2.h"
 #elif __ARM_NEON__
+#warning Compiling for SIMD NEON
 #include "vec_neon.h"
 #else
 #warning Compiling without any vectorization. This code will be very slow

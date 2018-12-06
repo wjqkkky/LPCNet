@@ -1,3 +1,5 @@
+# Makefile for LPCNet
+
 CC=gcc
 CFLAGS+=-DTRAINING=1 -I../include -Wall -W -O3 -g -W -Wextra -MMD -MP
 
@@ -14,7 +16,7 @@ endif
 
 all: dump_data test_lpcnet test_vec
 
-dump_data_objs := lpcnet.o nnet.o nnet_data.o
+dump_data_objs := denoise.o kiss_fft.o pitch.o celt_lpc.o
 dump_data_deps := $(dump_data_objs:.o=.d)
 dump_data: $(dump_data_objs)
 	gcc -o $@ $(CFLAGS) $(dump_data_objs) -lm

@@ -1,6 +1,7 @@
 /* AVX2/FMA implementation of vector operations, compile with -mavx2 -mfma */
 
 #include <immintrin.h>
+#ifndef LPCNET_TEST
 static __m256 exp8_approx(__m256 X)
 {
    const __m256 K0 = _mm256_set1_ps(0.99992522f);
@@ -90,7 +91,7 @@ static void vec_sigmoid(float *y, const float *x, int N)
         y[i] = (ex)/(ex+1);
     }
 }
-
+#endif
 static void sgemv_accum16(float *out, const float *weights, int rows, int cols, int col_stride, const float *x)
 {
    int i, j;

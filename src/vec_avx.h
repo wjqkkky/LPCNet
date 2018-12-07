@@ -8,6 +8,7 @@
 #ifndef LPCNET_TEST
 
 #ifdef __AVX2__
+#warning Ohh, a real AVX2 machine .....
 static __m256 exp8_approx(__m256 X)
 {
    const __m256 K0 = _mm256_set1_ps(0.99992522f);
@@ -31,6 +32,7 @@ static __m256 exp8_approx(__m256 X)
    return Y;
 }
 #else
+#warning Meh, just old an old AVX
 #define _mm256_fmadd_ps(a,b,c) _mm256_add_ps(_mm256_mul_ps(a, b), c)
 #define _mm_fmadd_ps(a,b,c) _mm_add_ps(_mm_mul_ps(a, b), c)
 static __m128 exp4_approx(__m128 X)

@@ -43,7 +43,7 @@
 #define SOFTMAX_HACK
 
 #ifdef __AVX__
-#warning Compiling for SIMD AVX
+#warning Compiling for SIMD AVX/AVX2
 #include "vec_avx.h"
 #elif __ARM_NEON__
 #warning Compiling for SIMD NEON

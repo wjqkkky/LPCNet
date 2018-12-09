@@ -26,11 +26,12 @@ const char simd[]="AVX2";
 #else
 const char simd[]="AVX";
 #endif
-#endif
-
-#ifdef __ARM_NEON__
+#elif __ARM_NEON__
 #include "vec_neon.h"
 const char simd[]="NEON";
+#else
+const char simd[]="none";
+
 #endif
 
 #undef celt_exp2
@@ -44,7 +45,7 @@ const char simd[]="NEON";
 #include "vec.h"
 
 #define ROW_STEP 16
-#define ROWS     ROW_STEP*2
+#define ROWS     ROW_STEP*10
 #define COLS     2
 #define ENTRIES  2
 

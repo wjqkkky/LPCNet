@@ -8,7 +8,7 @@ AVX:=$(shell cat /proc/cpuinfo | grep -c avx)
 NEON:=$(shell cat /proc/cpuinfo | grep -c neon)
 
 ifneq ($(AVX2),0)
-CFLAGS+=-mavx2 -mfma
+CFLAGS+=-mavx2 -mfma 
 else
 # AVX2 machines will also match on AVX
 ifneq ($(AVX),0)
@@ -17,7 +17,7 @@ endif
 endif
 
 ifneq ($(NEON),0)
-CFLAGS+=-mfpu=neon
+CFLAGS+=-mfpu=neon -march=armv8-a -mtune=cortex-a53
 endif
 
 all: dump_data test_lpcnet test_vec

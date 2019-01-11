@@ -51,7 +51,7 @@ __NOTE__: The repo aims to work with Tacotron2.
    make test_lpcnet
    ./dump_data -test test_input.s16 test_features.f32
    ./test_lpcnet test_features.f32 test.s16
-   ffmpeg f s16le -ar 16k -ac 1 -i test.s16 test-out.wav
+   ffmpeg -f s16le -ar 16k -ac 1 -i test.s16 test-out.wav
    ```
  
 # Speech Material for Training LPCNet
@@ -63,7 +63,7 @@ sh /path/to/concat.sh
 ```
 
 # Speech Material for Training Tacotron2
-Although the model has 55 dims features when training LPCNet, there are 20 features to be used input features when inferring the audio. You should enble TACOTRON2 Macro in Makefile to get the features for Training Tacotron2. You also should generate indepent features for every audio when training Tacotron2 other than concatate all features into one file when training LPCNet.
+Although the model has 55 dims features when training LPCNet, there are 20 features to be used as input features when inferring the audio. You should enble TACOTRON2 Macro in Makefile to get the features for Training Tacotron2. You also should generate indepent features for every audio when training Tacotron2 other than concatate all features into one file when training LPCNet.
 ```bash
 #preprocessing
 ./header_removal.sh

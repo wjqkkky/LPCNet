@@ -285,6 +285,7 @@ int main(int argc, char **argv) {
     float Ex[NB_BANDS], Ep[NB_BANDS];
     float Exp[NB_BANDS];
     float features[NB_FEATURES];
+    float taco_features[NB_BANDS+2];
     float E=0;
     int silent;
     for (i=0;i<FRAME_SIZE;i++) x[i] = tmp[i];
@@ -335,7 +336,13 @@ int main(int argc, char **argv) {
     }
     for (i=0;i<FRAME_SIZE;i++) x[i] += rand()/(float)RAND_MAX - .5;
     compute_frame_features(st, X, P, Ex, Ep, Exp, features, x);
-    fwrite(features, sizeof(float), NB_FEATURES, ffeat);
+    //fwrite(features, sizeof(float), NB_FEATURES, ffeat);
+	for (i=0; i < NB_BANDS; i++) {
+	  taco_features[i] = features[i];
+	}
+	taco_features[NB_BANDS]=features[36];
+	taco_features[NB_BANDS+1]=features[37];
+    fwrite(taco_features, sizeof(float), (NB_BANDS+2), ffeat);
     /* PCM is delayed by 1/2 frame to make the features centered on the frames. */
     for (i=0;i<FRAME_SIZE-TRAINING_OFFSET;i++) pcm[i+TRAINING_OFFSET] = float2short(x[i]);
     if (fpcm) write_audio(st, pcm, noise_std, fpcm);

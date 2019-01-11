@@ -1,5 +1,7 @@
 # LPCNet
 
+
+
 Low complexity implementation of the WaveRNN-based LPCNet algorithm, as described in:
 
 J.-M. Valin, J. Skoglund, [LPCNet: Improving Neural Speech Synthesis Through Linear Prediction](https://jmvalin.ca/papers/lpcnet_icassp2019.pdf), *Submitted for ICASSP 2019*, arXiv:1810.11846.
@@ -11,6 +13,8 @@ Work in progress software for researching low CPU complexity algorithms for spee
 The BSD licensed software is written in C and Python/Keras. For training, a GTX 1080 Ti or better is recommended.
 
 This software is an open source starting point for WaveRNN-based speech synthesis and coding.
+
+__NOTE__: The repo aims to work with Tacotron2.
 
 # Quickstart
 
@@ -47,14 +51,31 @@ This software is an open source starting point for WaveRNN-based speech synthesi
    make test_lpcnet
    ./dump_data -test test_input.s16 test_features.f32
    ./test_lpcnet test_features.f32 test.s16
+   ffmpeg f s16le -ar 16k -ac 1 -i test.s16 test-out.wav
    ```
  
-# Speech Material for Training 
+# Speech Material for Training LPCNet
 
 Suitable training material can be obtained from the [McGill University Telecommunications & Signal Processing Laboratory](http://www-mmsp.ece.mcgill.ca/Documents/Data/).  Download the ISO and extract the 16k-LP7 directory, the src/concat.sh script can be used to generate a headerless file of training samples.
 ```
 cd 16k-LP7
 sh /path/to/concat.sh
+```
+
+# Speech Material for Training Tacotron2
+Although the model has 55 dims features when training LPCNet, there are 20 features to be used input features when inferring the audio. You should enble TACOTRON2 Macro in Makefile to get the features for Training Tacotron2. You also should generate indepent features for every audio when training Tacotron2 other than concatate all features into one file when training LPCNet.
+```bash
+#preprocessing
+./header_removal.sh
+make dump_data taco=1   # Define TACOTRON2 macro
+./feature_extract.sh
+```
+```bash
+#synthesis
+make test_lpcnet taco=1 # Define TACOTRON2 macro
+./test_lpcnet test_features.f32 test.s16
+ffmpeg f s16le -ar 16k -ac 1 -i test.s16 test-out.wav
+
 ```
 
 # Reading Further

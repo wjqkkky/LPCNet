@@ -53,13 +53,24 @@ int main(int argc, char **argv) {
     }
 
     while (1) {
-        float in_features[NB_TOTAL_FEATURES];
+
         float features[NB_FEATURES];
         short pcm[FRAME_SIZE];
+
+#ifndef TACOTRON2
+        float in_features[NB_TOTAL_FEATURES];
         fread(in_features, sizeof(features[0]), NB_TOTAL_FEATURES, fin);
         if (feof(fin)) break;
         RNN_COPY(features, in_features, NB_FEATURES);
         RNN_CLEAR(&features[18], 18);
+#else
+        float in_features[NB_BANDS+2];
+        fread(in_features, sizeof(features[0]), NB_BANDS+2, fin);
+        if (feof(fin)) break;
+        RNN_COPY(features, in_features, NB_BANDS);
+        RNN_CLEAR(&features[18], 18);
+        RNN_COPY(features+36, in_features+NB_BANDS, 2);
+#endif
         lpcnet_synthesize(net, pcm, features, FRAME_SIZE);
         fwrite(pcm, sizeof(pcm[0]), FRAME_SIZE, fout);
     }

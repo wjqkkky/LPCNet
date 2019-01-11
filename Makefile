@@ -2,6 +2,10 @@
 
 CC=gcc
 CFLAGS+=-Wall -W -Wextra -Wno-unused-function -O3 -g -I../include 
+ifeq ($(taco),1)
+  CFLAGS += -DTACOTRON2
+endif
+
 
 AVX2:=$(shell cat /proc/cpuinfo | grep -c avx2)
 AVX:=$(shell cat /proc/cpuinfo | grep -c avx)

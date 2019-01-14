@@ -74,7 +74,7 @@ make dump_data taco=1   # Define TACOTRON2 macro
 #synthesis
 make test_lpcnet taco=1 # Define TACOTRON2 macro
 ./test_lpcnet test_features.f32 test.s16
-ffmpeg f s16le -ar 16k -ac 1 -i test.s16 test-out.wav
+ffmpeg -f s16le -ar 16k -ac 1 -i test.s16 test-out.wav
 
 ```
 

@@ -336,13 +336,16 @@ int main(int argc, char **argv) {
     }
     for (i=0;i<FRAME_SIZE;i++) x[i] += rand()/(float)RAND_MAX - .5;
     compute_frame_features(st, X, P, Ex, Ep, Exp, features, x);
-    //fwrite(features, sizeof(float), NB_FEATURES, ffeat);
-	for (i=0; i < NB_BANDS; i++) {
-	  taco_features[i] = features[i];
-	}
-	taco_features[NB_BANDS]=features[36];
-	taco_features[NB_BANDS+1]=features[37];
+#ifndef TACOTRON2
+    fwrite(features, sizeof(float), NB_FEATURES, ffeat);
+#else
+	  for (i=0; i < NB_BANDS; i++) {
+	    taco_features[i] = features[i];
+	  }
+	  taco_features[NB_BANDS]=features[36];
+	  taco_features[NB_BANDS+1]=features[37];
     fwrite(taco_features, sizeof(float), (NB_BANDS+2), ffeat);
+#endif
     /* PCM is delayed by 1/2 frame to make the features centered on the frames. */
     for (i=0;i<FRAME_SIZE-TRAINING_OFFSET;i++) pcm[i+TRAINING_OFFSET] = float2short(x[i]);
     if (fpcm) write_audio(st, pcm, noise_std, fpcm);

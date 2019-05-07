@@ -6,6 +6,9 @@ Low complexity implementation of the WaveRNN-based LPCNet algorithm, as describe
 
 J.-M. Valin, J. Skoglund, [LPCNet: Improving Neural Speech Synthesis Through Linear Prediction](https://jmvalin.ca/papers/lpcnet_icassp2019.pdf), *Submitted for ICASSP 2019*, arXiv:1810.11846.
 
+# Warning
+Tacotron2 or DeepVoice3 which predictes parameters including ceptral coefficients and 2 pitch parameters undiscriminating is probably good enough to underestimate pitch parameters. However, LPCNet is sensitive to the estimation of pitch coefficents, so it is a good idea to predict the features by replacing mel spectrum with ceptral coefficients and 2 pitch parameters directly in Tacotron2 or DeepVoice3. 
+
 # Introduction
 
 Work in progress software for researching low CPU complexity algorithms for speech synthesis and compression by applying Linear Prediction techniques to WaveRNN. High quality speech can be synthesised on regular CPUs (around 3 GFLOP) with SIMD support (AVX, AVX2/FMA, NEON currently supported).

@@ -7,7 +7,7 @@ Low complexity implementation of the WaveRNN-based LPCNet algorithm, as describe
 J.-M. Valin, J. Skoglund, [LPCNet: Improving Neural Speech Synthesis Through Linear Prediction](https://jmvalin.ca/papers/lpcnet_icassp2019.pdf), *Submitted for ICASSP 2019*, arXiv:1810.11846.
 
 # Warning
-Tacotron2 or DeepVoice3 which predictes parameters including ceptral coefficients and 2 pitch parameters undiscriminating is probably not good enough to estimate pitch parameters. However, LPCNet is sensitive to the estimation of pitch coefficents, so it is not recommended to predict the features when training acotron2 or DeepVoice3 replacing mel spectrum with ceptral coefficients and 2 pitch parameters directly. 
+Tacotron2 or DeepVoice3 which predictes parameters including ceptral coefficients and 2 pitch parameters undiscriminating is probably not good enough to estimate pitch parameters. However, LPCNet is sensitive to the estimation of pitch coefficents, so it is not recommended to predict the features when training acotron2 or DeepVoice3 replacing mel spectrum with ceptral coefficients and 2 pitch parameters directly.    
 New:
 Training your tacotron2 or DeepVoice3 very well may help to estimate the pitch parameters.
 

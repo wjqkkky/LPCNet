@@ -128,7 +128,7 @@ mel_target = np.resize(mel_target, (-1, self._hparams.num_mels))
 2. convert the features with npy format to \*.f32 format with the following python scripts.
 ```python
 import numpy as np
-npy_data = np.fromfile("npy_from_tacotron2.npy")
+npy_data = np.load("npy_from_tacotron2.npy")
 npy_data = npy_data.reshape((-1,))
 npy_data.tofile("f32_for_lptnet.f32")
 ```

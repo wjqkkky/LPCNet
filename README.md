@@ -8,7 +8,7 @@ J.-M. Valin, J. Skoglund, [LPCNet: Improving Neural Speech Synthesis Through Lin
 
 # Warning
 Tacotron2 or DeepVoice3 which predictes parameters including ceptral coefficients and 2 pitch parameters undiscriminating is probably not good enough to estimate pitch parameters. However, LPCNet is sensitive to the estimation of pitch coefficents, so it is not recommended to predict the features when training acotron2 or DeepVoice3 replacing mel spectrum with ceptral coefficients and 2 pitch parameters directly.    
-New:
+Update:
 Training your tacotron2 or DeepVoice3 very well may help to estimate the pitch parameters.
 
 # Introduction
@@ -80,12 +80,75 @@ make dump_data taco=1   # Define TACOTRON2 macro
 make test_lpcnet taco=1 # Define TACOTRON2 macro
 ./test_lpcnet test_features.f32 test.s16
 ffmpeg -f s16le -ar 16k -ac 1 -i test.s16 test-out.wav
+```
 
+# How to combine the LPCNet and Tacotron2.  
+## When training  
+the Materials are generated independently with two procedures.
+1. for LPCNet   
+* Remove the header of audio files and prepare the concatated materials.
+```bash
+cd 16k-LP7
+sh /path/to/concat.sh
+```
+* Build the repo without TACOTRON2 Macro and generate the data for LPCNet. It will follow the Mozilla version totally.   
+```bash
+make dump_data
+./dump_data -train input.s16 features.f32 data.u8
+```
+* Train the LPCNet.   
+```bash
+./train_lpcnet.py features.f32 data.u8
+``` 
+
+2. For tacotron2    
+You can git clone the [repo](https://github.com/Rayhane-mamah/Tacotron-2) to as the front-end.    
+* Re-Build the repo of LPCNet from the floor. If you want to use the LPCNet in (1) step, plz make clean first as follows. otherwise you can skip the step.
+```bash
+make clean
+```
+* Build the repo of LPCnet with TACOTRON2 Macro    
+```bash
+make dump_data taco=1   # Define TACOTRON2 macro
+```
+* Remove the header of audio files and generate the data for Tacotron2 but NOT concatate the data with my scripts. you should replace the direcroty in the scripts with your data folder.
+```bash
+./header_removal.sh
+./feature_extract.sh
+```
+* Preprocessing the data and train the tacotron2 following the steps of [Tacatron2 repo](https://github.com/Rayhane-mamah/Tacotron-2). You need to modify the dimensions of input features(num_mels) to 20.
+
+## When synthesising.
+1. synthesis the features with Tacotron2 following the steps of [Tacatron2 repo](https://github.com/Rayhane-mamah/Tacotron-2)   
+2. convert the features with npy format to \*.f32 format with the following python scripts.
+```python
+import numpy as np
+npy_data = np.fromfile("npy_from_tacotron2.npy")
+npy_data = npy_data.reshape((-1,))
+npy_data.tofile("f32_for_lptnet.f32")
+```
+3 Synthesis the waveform using LPCNet
+You should  use LPCNet of the C code version and make sure that the LPCNet is builded with TACOTRON2 Macro.    
+* First extract the model files nnet_data.h and nnet_data.c
+   ```bash
+   ./dump_lpcnet.py lpcnet15_384_10_G16_64.h5
+   ```
+* Build the test LPCNet with TACOTRON2 Macro.   
+``` bash
+make test_lpcnet taco=1 # Define TACOTRON2 macro
+```
+* synthesis theraw data of waveform using the LPCNet of the C code version.
+``` bash
+./test_lpcnet f32_for_lptnet.f32 test.s16
+```
+* add the headder of audio the raw data and generate the pcm audio.
+``` bash
+ffmpeg -f s16le -ar 16k -ac 1 -i test.s16 test-out.wav
 ```
 
 # Reading Further
 
 1. [LPCNet: DSP-Boosted Neural Speech Synthesis](https://people.xiph.org/~jm/demo/lpcnet/)
-1. Sample model files:
+2. Sample model files:
 https://jmvalin.ca/misc_stuff/lpcnet_models/
 

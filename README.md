@@ -116,7 +116,12 @@ make dump_data taco=1   # Define TACOTRON2 macro
 ./header_removal.sh
 ./feature_extract.sh
 ```
-* train the tacotron2 with the features generated at the last steo and follow the steps of [Tacatron2 repo](https://github.com/Rayhane-mamah/Tacotron-2). You need to modify the dimensions of input features(num_mels) to 20.
+* Convert the data generated at the last step which has .f32 extension to what could be loaded with numpy. I merge it to the Tacotron feeder [here](https://github.com/Rayhane-mamah/Tacotron-2/blob/master/tacotron/feeder.py#L192) and [here](https://github.com/Rayhane-mamah/Tacotron-2/blob/master/tacotron/feeder.py#L128) with the following code.
+```python
+mel_target = np.fromfile(os.path.join(self._mel_dir, meta[0]), dtype='float32')
+mel_target = np.resize(mel_target, (-1, self._hparams.num_mels))
+```
+* train the tacotron2 with the features  and follow the steps of [Tacatron2 repo](https://github.com/Rayhane-mamah/Tacotron-2). You need to modify the dimensions of input features(num_mels) to 20.
 
 ## When synthesising.
 1. synthesis the features with Tacotron2 following the steps of [Tacatron2 repo](https://github.com/Rayhane-mamah/Tacotron-2)   

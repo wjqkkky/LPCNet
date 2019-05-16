@@ -127,7 +127,7 @@ npy_data = np.fromfile("npy_from_tacotron2.npy")
 npy_data = npy_data.reshape((-1,))
 npy_data.tofile("f32_for_lptnet.f32")
 ```
-3 Synthesis the waveform using LPCNet
+3. Synthesis the waveform using LPCNet
 You should  use LPCNet of the C code version and make sure that the LPCNet is builded with TACOTRON2 Macro.    
 * First extract the model files nnet_data.h and nnet_data.c
    ```bash

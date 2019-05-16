@@ -111,12 +111,12 @@ make clean
 ```bash
 make dump_data taco=1   # Define TACOTRON2 macro
 ```
-* Remove the header of audio files and generate the data for Tacotron2 but NOT concatate the data with my scripts. you should replace the direcroty in the scripts with your data folder.
+* Remove the header of audio files and generate the features for Tacotron2 but NOT concatate the data with my scripts. you should replace the direcroty in the scripts with your data folder.
 ```bash
 ./header_removal.sh
 ./feature_extract.sh
 ```
-* Preprocessing the data and train the tacotron2 following the steps of [Tacatron2 repo](https://github.com/Rayhane-mamah/Tacotron-2). You need to modify the dimensions of input features(num_mels) to 20.
+* train the tacotron2 with the features generated at the last steo and follow the steps of [Tacatron2 repo](https://github.com/Rayhane-mamah/Tacotron-2). You need to modify the dimensions of input features(num_mels) to 20.
 
 ## When synthesising.
 1. synthesis the features with Tacotron2 following the steps of [Tacatron2 repo](https://github.com/Rayhane-mamah/Tacotron-2)   

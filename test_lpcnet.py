@@ -45,25 +45,46 @@ model, enc, dec = lpcnet.new_lpcnet_model()
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['sparse_categorical_accuracy'])
 #model.summary()
 
-feature_file = sys.argv[1]
-out_file = sys.argv[2]
+#argc = sys.argc
+#if False and argc == 3:
+#    print("using official mode 55 features")
+#    feature_file = sys.argv[1]
+#    out_file = sys.argv[2]
+#    mode = "vocoder"
+#else:
+
+mode = sys.argv[1]
+feature_file = sys.argv[2]
+out_file = sys.argv[3]
+
 frame_size = 160
-nb_features = 55
+nb_frames = 1
 nb_used_features = model.nb_used_features
+
+if mode == "vocoder":
+    print("using official mode 55 features")
+    nb_features = 55
+else:
+    from lib import LPCNet
+    nb_features = 20
 
 features = np.fromfile(feature_file, dtype='float32')
 features = np.resize(features, (-1, nb_features))
-nb_frames = 1
+
 feature_chunk_size = features.shape[0]
 pcm_chunk_size = frame_size*feature_chunk_size
 
 features = np.reshape(features, (nb_frames, feature_chunk_size, nb_features))
-features[:,:,18:36] = 0
+
+if mode != "lpcnet":
+    extra_features = np.zeros((nb_frames, feature_chunk_size, nb_used_features - nb_features))
+    extra_features[:, :, -2:] = features[:, :, 18:20]
+    features = np.concatenate((features, extra_features), axis=-1)
+
+features[:, :, 18:36] = 0
 periods = (.1 + 50*features[:,:,36:37]+100).astype('int16')
 
-
-
-model.load_weights('lpcnet9_384_10_G16_120.h5')
+model.load_weights('pretrained_model/lpcnet18_384_10_G16_120.h5')
 
 order = 16
 
@@ -81,9 +102,14 @@ fout = open(out_file, 'wb')
 skip = order + 1
 for c in range(0, nb_frames):
     cfeat = enc.predict([features[c:c+1, :, :nb_used_features], periods[c:c+1, :, :]])
+
     for fr in range(0, feature_chunk_size):
+        print("====>", fr, feature_chunk_size)
         f = c*feature_chunk_size + fr
-        a = features[c, fr, nb_features-order:]
+        if mode == "lpcnet":
+            a = features[c, fr, nb_features-order:]
+        else:
+            a = LPCNet.lpc_from_cepstrum(features[c, fr, :18])
         for i in range(skip, frame_size):
             pred = -sum(a*pcm[f*frame_size + i - 1:f*frame_size + i - order-1:-1])
             fexc[0, 0, 1] = lin2ulaw(pred)
@@ -103,5 +129,3 @@ for c in range(0, nb_frames):
             #print(mem)
             np.array([np.round(mem)], dtype='int16').tofile(fout)
         skip = 0
-
-

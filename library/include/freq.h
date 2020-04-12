@@ -42,6 +42,9 @@
 
 #define NB_BANDS 18
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 void compute_band_energy(float *bandE, const kiss_fft_cpx *X);
 void compute_band_corr(float *bandE, const kiss_fft_cpx *X, const kiss_fft_cpx *P);
 
@@ -54,3 +57,7 @@ float lpc_from_bands(float *lpc, const float *Ex);
 float lpc_from_cepstrum(float *lpc, const float *cepstrum);
 void apply_window(float *x);
 
+
+#ifdef __cplusplus
+}
+#endif

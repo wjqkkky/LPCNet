@@ -2,5 +2,5 @@
 # into one headerless training file
 for i in mandarin_female/wavs/*.s16 
 do
-./dump_data -test $i mandarin_female/feature_extract/${i##*/}.f32
+./dump_data -acoustic $i mandarin_female/feature_extract/${i##*/}.f32
 done

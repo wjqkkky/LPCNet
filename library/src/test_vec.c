@@ -57,29 +57,29 @@ int test_sgemv_accum16() {
 
     printf("sgemv_accum16.....................: ");
     for(i=0; i<ROWS*COLS; i++) {
-	weights[i] = i;
+        weights[i] = i;
     }
     for(i=0; i<ROWS; i++) {
-	out[i] = 0;
-	out_fast[i] = 0;
+        out[i] = 0;
+        out_fast[i] = 0;
     }
   
     for(i=0; i<COLS; i++) {
-	x[i] = i+1;
+        x[i] = i+1;
     }
 
     sgemv_accum16(out, weights, ROWS, COLS, 1, x);
     sgemv_accum16_fast(out_fast, weights, ROWS, COLS, 1, x);
 
     for(i=0; i<ROWS; i++) {
-	if (out[i] != out_fast[i]) {
-	    printf("fail\n");
-	    for(i=0; i<ROWS; i++) {
-		printf("%d %f %f\n", i, out[i], out_fast[i]);
-		if (out[i] != out_fast[i])
-		    return 1;
-	    }
-	}
+        if (out[i] != out_fast[i]) {
+            printf("fail\n");
+            for(i=0; i<ROWS; i++) {
+                printf("%d %f %f\n", i, out[i], out_fast[i]);
+                if (out[i] != out_fast[i])
+                    return 1;
+            }
+        }
     }
 
     printf("pass\n");
@@ -97,23 +97,23 @@ int test_sparse_sgemv_accum16() {
 
     printf("sparse_sgemv_accum16..............: ");
     for(i=0; i<ROW_STEP*(1+2); i++) {
-	w[i] = i;
-	out[i] = 0;
-	out_fast[i] = 0;
+        w[i] = i;
+        out[i] = 0;
+        out_fast[i] = 0;
     }
   
     sparse_sgemv_accum16(out, w, rows, indx, x);
     sparse_sgemv_accum16_fast(out_fast, w, rows, indx, x);
 
     for(i=0; i<ROW_STEP*ENTRIES; i++) {
-	if (out[i] != out_fast[i]) {
-	    printf("fail\n");
-	    for(i=0; i<ROW_STEP*ENTRIES; i++) {
-		printf("%d %f %f\n", i, out[i], out_fast[i]);
-		if (out[i] != out_fast[i])
-		    return 1;
-	    }
-	}
+        if (out[i] != out_fast[i]) {
+            printf("fail\n");
+            for(i=0; i<ROW_STEP*ENTRIES; i++) {
+                printf("%d %f %f\n", i, out[i], out_fast[i]);
+                if (out[i] != out_fast[i])
+                    return 1;
+            }
+        }
     }
 
     printf("pass\n");

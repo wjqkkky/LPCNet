@@ -258,9 +258,11 @@ int main(int argc, char **argv) {
   st = rnnoise_create();
   if (argc == 5 && strcmp(argv[1], "-train")==0) training = 1;
   if (argc == 4 && strcmp(argv[1], "-test")==0) training = 0;
-  if (training == -1) {
+  if (argc == 4 && strcmp(argv[1], "-acoustic")==0) training = 2;
+  if (-1 == training) {
     fprintf(stderr, "usage: %s -train <speech> <features out> <pcm out>\n", argv[0]);
     fprintf(stderr, "  or   %s -test <speech> <features out>\n", argv[0]);
+    fprintf(stderr, "  or   %s -acoustic <speech> <features out>\n", argv[0]);
     return 1;
   }
   f1 = fopen(argv[2], "r");
@@ -273,7 +275,7 @@ int main(int argc, char **argv) {
     fprintf(stderr,"Error opening output feature file: %s\n", argv[3]);
     exit(1);
   }
-  if (training) {
+  if (1 == training) {
     fpcm = fopen(argv[4], "w");
     if (fpcm == NULL) {
       fprintf(stderr,"Error opening output PCM file: %s\n", argv[4]);
@@ -285,19 +287,18 @@ int main(int argc, char **argv) {
     float Ex[NB_BANDS], Ep[NB_BANDS];
     float Exp[NB_BANDS];
     float features[NB_FEATURES];
-    float taco_features[NB_BANDS+2];
     float E=0;
     int silent;
     for (i=0;i<FRAME_SIZE;i++) x[i] = tmp[i];
     fread(tmp, sizeof(short), FRAME_SIZE, f1);
     if (feof(f1)) {
-      if (!training) break;
+      if (training != 1) break;
       rewind(f1);
       fread(tmp, sizeof(short), FRAME_SIZE, f1);
       one_pass_completed = 1;
     }
     for (i=0;i<FRAME_SIZE;i++) E += tmp[i]*(float)tmp[i];
-    if (training) {
+    if (1 == training) {
       silent = E < 5000 || (last_silent && E < 20000);
       if (!last_silent && silent) {
         for (i=0;i<FRAME_SIZE;i++) savedX[i] = x[i];
@@ -315,7 +316,7 @@ int main(int argc, char **argv) {
       last_silent = silent;
     }
     if (count>=5000000 && one_pass_completed) break;
-    if (training && ++gain_change_count > 2821) {
+    if (1 == training && ++gain_change_count > 2821) {
       float tmp;
       speech_gain = pow(10., (-20+(rand()%40))/20.);
       if (rand()%20==0) speech_gain *= .01;
@@ -336,16 +337,14 @@ int main(int argc, char **argv) {
     }
     for (i=0;i<FRAME_SIZE;i++) x[i] += rand()/(float)RAND_MAX - .5;
     compute_frame_features(st, X, P, Ex, Ep, Exp, features, x);
-#ifndef TACOTRON2
-    fwrite(features, sizeof(float), NB_FEATURES, ffeat);
-#else
-	  for (i=0; i < NB_BANDS; i++) {
-	    taco_features[i] = features[i];
-	  }
-	  taco_features[NB_BANDS]=features[36];
-	  taco_features[NB_BANDS+1]=features[37];
-    fwrite(taco_features, sizeof(float), (NB_BANDS+2), ffeat);
-#endif
+		if (2 == training) {
+      float taco_features[NB_BANDS+2];
+			memcpy(taco_features, features, (NB_BANDS) * sizeof(taco_features[0]));
+			memcpy(taco_features, features+36, (2) * sizeof(taco_features[0]));
+      fwrite(taco_features, sizeof(float), (NB_BANDS+2), ffeat);
+		} else {
+      fwrite(features, sizeof(float), NB_FEATURES, ffeat);
+		}
     /* PCM is delayed by 1/2 frame to make the features centered on the frames. */
     for (i=0;i<FRAME_SIZE-TRAINING_OFFSET;i++) pcm[i+TRAINING_OFFSET] = float2short(x[i]);
     if (fpcm) write_audio(st, pcm, noise_std, fpcm);

@@ -219,8 +219,8 @@ if len(sys.argv) > 2:
     cfile = sys.argv[2];
     hfile = sys.argv[3];
 else:
-    cfile = 'nnet_data.c'
-    hfile = 'nnet_data.h'
+    cfile = 'library/src/nnet_data.c'
+    hfile = 'library/include/nnet_data.h'
 
 
 f = open(cfile, 'w')

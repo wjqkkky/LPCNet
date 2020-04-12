@@ -35,42 +35,47 @@ int main(int argc, char **argv) {
     FILE *fin, *fout;
     LPCNetState *net;
     net = lpcnet_create();
-    if (argc != 3)
+    if (argc != 4)
     {
-        fprintf(stderr, "usage: test_lpcnet <features.f32> <output.pcm>\n");
+        fprintf(stderr, "usage: test_lpcnet -lpcnet <features.f32> <output.pcm>\n
+						             or     test_lpcnet -acoustic <features.f32> <output.pcm>\n");
         return 0;
     }
-    fin = fopen(argv[1], "rb");
+
+		int mode = -1:
+    if (strcmp(argv[1], "-lpcnet")==0) mode = 0;
+    if (strcmp(argv[1], "-acoustic")==0) mode = 1;
+
+    fin = fopen(argv[2], "rb");
     if (fin == NULL) {
-	fprintf(stderr, "Can't open %s\n", argv[1]);
-	exit(1);
+	      fprintf(stderr, "Can't open %s\n", argv[1]);
+	      exit(1);
     }
 
-    fout = fopen(argv[2], "wb");
+    fout = fopen(argv[3], "wb");
     if (fout == NULL) {
-	fprintf(stderr, "Can't open %s\n", argv[2]);
-	exit(1);
+	      fprintf(stderr, "Can't open %s\n", argv[2]);
+	      exit(1);
     }
 
     while (1) {
-
         float features[NB_FEATURES];
         short pcm[FRAME_SIZE];
 
-#ifndef TACOTRON2
-        float in_features[NB_TOTAL_FEATURES];
-        fread(in_features, sizeof(features[0]), NB_TOTAL_FEATURES, fin);
-        if (feof(fin)) break;
-        RNN_COPY(features, in_features, NB_FEATURES);
-        RNN_CLEAR(&features[18], 18);
-#else
-        float in_features[NB_BANDS+2];
-        fread(in_features, sizeof(features[0]), NB_BANDS+2, fin);
-        if (feof(fin)) break;
-        RNN_COPY(features, in_features, NB_BANDS);
-        RNN_CLEAR(&features[18], 18);
-        RNN_COPY(features+36, in_features+NB_BANDS, 2);
-#endif
+				if (0 == mode) {
+            float in_features[NB_TOTAL_FEATURES];
+            fread(in_features, sizeof(features[0]), NB_TOTAL_FEATURES, fin);
+            if (feof(fin)) break;
+            RNN_COPY(features, in_features, NB_FEATURES);
+            RNN_CLEAR(&features[18], 18);
+				} else {
+            float in_features[NB_BANDS+2];
+            fread(in_features, sizeof(features[0]), NB_BANDS+2, fin);
+            if (feof(fin)) break;
+            RNN_COPY(features, in_features, NB_BANDS);
+            RNN_CLEAR(&features[18], 18);
+            RNN_COPY(features+36, in_features+NB_BANDS, 2);
+				}
         lpcnet_synthesize(net, pcm, features, FRAME_SIZE);
         fwrite(pcm, sizeof(pcm[0]), FRAME_SIZE, fout);
     }

@@ -10,7 +10,15 @@
 #define RNN_INLINE inline
 #define OPUS_INLINE inline
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 float lpc_from_cepstrum(float *lpc, const float *cepstrum);
+
+#ifdef __cplusplus
+}
+#endif
 
 #define LOG256 5.5451774445f
 static RNN_INLINE float log2_approx(float x)

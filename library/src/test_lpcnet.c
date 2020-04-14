@@ -37,12 +37,12 @@ int main(int argc, char **argv) {
     net = lpcnet_create();
     if (argc != 4)
     {
-        fprintf(stderr, "usage: test_lpcnet -lpcnet <features.f32> <output.pcm>\n
-						             or     test_lpcnet -acoustic <features.f32> <output.pcm>\n");
+        fprintf(stderr, "usage: test_lpcnet -lpcnet <features.f32> <output.pcm>\n");
+	fprintf(stderr, "or     test_lpcnet -acoustic <features.f32> <output.pcm>\n");
         return 0;
     }
-
-		int mode = -1:
+    
+    int mode = -1;
     if (strcmp(argv[1], "-lpcnet")==0) mode = 0;
     if (strcmp(argv[1], "-acoustic")==0) mode = 1;
 

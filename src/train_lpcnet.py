@@ -99,11 +99,10 @@ del sig
 del pred
 
 # dump models to disk as we go
-checkpoint = ModelCheckpoint('checkpoint/lpcnet20_384_10_G16_{epoch:02d}.h5')
+checkpoint = ModelCheckpoint('lpcnet20_384_10_G16_{epoch:02d}.h5')
 
 # model.load_weights('lpcnet9b_384_10_G16_01.h5')
-model.compile(optimizer=Adam(0.001, amsgrad=True, decay=5e-5), loss='sparse_categorical_crossentropy',
-			  metrics=['accuracy', 'loss', 'sparse_categorical_accuracy'])
+model.compile(optimizer=Adam(0.001, amsgrad=True, decay=5e-5), loss='sparse_categorical_crossentropy')
 
 tb_callBack = TensorBoard(log_dir="./events", histogram_freq=0.5, write_grads=True)
 model.fit([in_data, in_exc, features, periods], out_exc, batch_size=batch_size, epochs=nb_epochs, validation_split=0.0,
